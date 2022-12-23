@@ -3,3 +3,6 @@ environment/saved_checkpoints
 .idea
 __pycache__/
 *.pyc
+saved_models
+*.pt
+*.pickle

@@ -32,3 +32,10 @@ class ConnectFourAgent:
 
     def no_grad(self):
         self.optimizer.zero_grad()
+
+    def save_model(self, path):
+        torch.save(self.policy.state_dict(), path)
+
+    def load_model(self, path):
+        state_dict = torch.load(path)
+        self.policy.load_state_dict(state_dict)
