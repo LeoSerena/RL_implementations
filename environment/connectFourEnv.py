@@ -13,6 +13,7 @@ class ConnectFourEnv:
             blank_reward: float = -1e-4
     ):
         self.state = None
+        self.cnt = 0
         self.num_rows = num_rows
         self.num_cols = num_cols
         self.reset_state()
@@ -21,6 +22,7 @@ class ConnectFourEnv:
 
     def reset_state(self):
         self.state = np.zeros((self.num_rows, self.num_cols))
+        self.cnt = 0
 
     def add_piece(self, i, value):
         """
@@ -70,4 +72,8 @@ class ConnectFourEnv:
                   or check_traj(r_x, r_y) \
                   or check_traj(r_x, reversed(r_y))
 
-        return is_over, self.win_reward if is_over else self.blank_reward
+        self.cnt += 1
+        if not is_over and self.cnt == self.num_rows * self.num_cols:
+            return True, 0, False
+
+        return is_over, self.win_reward if is_over else self.blank_reward, True

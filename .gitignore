@@ -1,3 +1,5 @@
 .ipynb_checkpoints
 environment/saved_checkpoints
 .idea
+__pycache__/
+*.pyc

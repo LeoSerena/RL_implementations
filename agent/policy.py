@@ -24,7 +24,6 @@ class VanillaPolicyModel(torch.nn.Module):
             self.denses[i] = torch.nn.Linear(dense_dim, dense_dim)
 
         self.final_dense = torch.nn.Linear(dense_dim, 7)
-        self.tanh = torch.nn.Tanh()
 
     def forward(self, x):
         if self.with_cnn:
@@ -38,16 +37,23 @@ class VanillaPolicyModel(torch.nn.Module):
             x = d(x)
             x = torch.relu(x)
         x = self.final_dense(x)
-        return self.tanh(x)
+        return x
 
     def get_distribution(self, state):
         # Here we prevent the model to select a value that has its column already full
+
         full_columns = torch.Tensor(
             np.where(np.sum(np.abs(state), axis=0) == state.shape[0], -np.inf, 0)
         ).reshape(1, state.shape[1])
         state = torch.Tensor(state).reshape(1, 6, 7)
         logits = self(state)
-        logits = logits + full_columns
+        logits = torch.add(logits, full_columns)
         # All categorical does is a softmax and build a distribution
         # function that allows for sampling over it (using .sample)
-        return torch.distributions.Categorical(logits=logits)
+        try:
+            return torch.distributions.Categorical(logits=logits)
+        except ValueError:
+            print(state)
+            print(full_columns)
+            print(logits)
+            raise
